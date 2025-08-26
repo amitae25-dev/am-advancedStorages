@@ -4,6 +4,3 @@ CreateThread(function()
 end)
 
 exports("am_storages:isPlayerInside", isPlayerInside())
-exports("am_storages:playerHasWarehouse", playerHasWarehouse())
-export("am_storages:warehouseLevel", warehouseLevel())
-
