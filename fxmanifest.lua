@@ -19,7 +19,9 @@ client_scripts {
 
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
+	'server/discordLog.lua',
 	'server/functions.lua',
 	'server/main.lua'
 }
+
 
