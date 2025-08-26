@@ -1,10 +1,10 @@
 Server = {}
 Server.Webhooks = {
-    ['purchase_storage'] = ,
-    ['upgrade_storage'] = ,
-    ['sell_storage'] = ,
-    ['enter_exit'] = ,
-    ['open_stash'] = ,
+    ['purchase_storage'] = 'YOUR_WEBHOOK_HERE',
+    ['upgrade_storage'] = 'YOUR_WEBHOOK_HERE',
+    ['sell_storage'] = 'YOUR_WEBHOOK_HERE',
+    ['enter_exit'] = 'YOUR_WEBHOOK_HERE',
+    ['open_stash'] = 'YOUR_WEBHOOK_HERE',
 }
 
 
@@ -28,5 +28,6 @@ function DiscordLog(message, webhook)
     }
 }), { ['Content-Type'] = 'application/json' })
 end
+
 
  
