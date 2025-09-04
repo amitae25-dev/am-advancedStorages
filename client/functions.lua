@@ -1,7 +1,5 @@
 local inside = false
 local npc 
-local hasWarehouse = false
-local lvl = 1
 
 function LoadModel(model)
     while not HasModelLoaded(model) do
@@ -16,27 +14,18 @@ function isPlayerInside()
     return inside
 end
 
-function playerHasWarehouse()
-    return hasWarehouse
-end
-
-function warehouseLevel()
-    return lvl 
-end
-
 -- Code
 
 function InitTarget()
     if Config.Blip.showBlip then 
         local blip = AddBlipForCoord(Config.NPC.coords.x, Config.NPC.coords.y, Config.NPC.coords.z)
-        print(json.encode(Config.NPC))
         SetBlipSprite(blip, Config.Blip.blipModel)
         SetBlipDisplay(blip, 4)
         SetBlipScale(blip, Config.Blip.blipScale)
         SetBlipAsShortRange(blip, true)
         SetBlipColour(blip, Config.Blip.blipColor)
         BeginTextCommandSetBlipName("STRING")
-        AddTextComponentString('asd')
+        AddTextComponentString(Config.Blip.blipLabel)
         EndTextCommandSetBlipName(blip)
     end
 
@@ -63,7 +52,8 @@ function InitTarget()
 
                 exports.ox_target:addLocalEntity(npc, {
                     name = 'am_storage_target',
-                    icon = 'box-open',
+                    icon = 'hand',
+                    --iconColor = 'white',
                     label = Config.Translate['npc_target'],
                     distance = 1.5,
                     canInteract = function(entity, distance, coords)
@@ -88,15 +78,14 @@ end
 function OpenStorageMain()
     lib.callback('am_storages:getPlayerStorage', false, function(result)
         local options = {}
-        print(json.encode(result))
         if result and #result > 0 and result[1].id then 
             table.insert(options, {
-                title = Config.Translate['enter_storage'],
+                title = string.format(Config.Translate['enter_storage'], result[1].name),
                 description = Config.Translate['enter_storage_desc'],
                 icon = 'door-open',
                 iconColor = 'teal',
                 onSelect = function()
-                    EnterWarehouse(result[1])
+                    EnterWarehouse(result[1], true)
                 end
             })
             hasWarehouse = true
@@ -117,7 +106,10 @@ function OpenStorageMain()
             description = Config.Translate['shared_storages_desc'],
             icon = 'share',
             iconColor = 'blue',
-            disabled = true
+            disabled = false,
+            onSelect = function()
+                OpenShared()
+            end
         })
         lib.registerContext({
             id = 'am_storage_main',
@@ -125,6 +117,39 @@ function OpenStorageMain()
             options = options
         })
         lib.showContext('am_storage_main')
+    end)
+end
+
+function OpenShared()
+    lib.callback('am_storages:getSharedWithMe', false, function(result)
+        local options = {}
+        if result and #result > 0 then 
+            for index, data in ipairs(result) do 
+                table.insert(options, {
+                    title = string.format(Config.Translate['shared_options'], data.wh_name),
+                    description = string.format(Config.Translate['shared_options_desc'], data.player_name, data.wh_lvl),
+                    icon = 'info',
+                    iconColor = 'teal',
+                    onSelect = function()
+                        lib.callback('am_storages:getStorageFromID', false, function(data)
+                            EnterWarehouse(data[1], false)
+                        end, data.player_identifier)
+                    end
+                })
+            end
+        else 
+            table.insert(options, {
+                title = Config.Translate['shared_empty'],
+                icon = 'x',
+                iconColor = 'red',
+            })
+        end
+        lib.registerContext({
+            id = 'am_storage_shared',
+            title = Config.Translate['shared_header'],
+            options = options
+        })
+        lib.showContext('am_storage_shared')
     end)
 end
 
@@ -153,11 +178,40 @@ function OpenManagementMenu()
                 description = Config.Translate['share_warehouse_desc'],
                 icon = 'share',
                 iconColor = 'blue',
-                disabled = true,
+                disabled = false,
                 onSelect = function()
-                    -- Share Menu Ui
+                    OpenSharedManagement()
                 end
             })
+            --[[table.insert(options, {
+                title = Config.Translate['settings'],
+                description = Config.Translate['settings_desc'],
+                icon = 'gear',
+                --iconColor = 'red',
+                disabled = false,
+                onSelect = function()
+                    SellWarehouse(result[1])
+                end
+            })
+            table.insert(options, {
+                title = Config.Translate['rename_warehouse'],
+                description = string.format(Config.Translate['rename_warehouse_desc'], result[1].name),
+                icon = 'pencil',
+                iconColor = 'blue',
+                disabled = false,
+                onSelect = function()
+                    local input = lib.inputDialog(Config.Translate['input_rename_header'], {
+                        {type = 'input', label = Config.Translate['input_rename'], description = Config.Translate['input_rename'], required = true, min = 4, max = 20},
+                    })
+                    if input[1] then 
+                        lib.callback('am_storages:renameStorage', false, function(success)
+                            if success and success > 0 then 
+                                OpenManagementMenu()
+                            end
+                        end, input[1])
+                    end
+                end
+            })]]
             table.insert(options, {
                 title = Config.Translate['sell_warehouse'],
                 description = string.format(Config.Translate['sell_warehouse_desc'], result[1].level, Config.Levels[result[1].level].sellPrice),
@@ -172,9 +226,96 @@ function OpenManagementMenu()
         lib.registerContext({
             id = 'am_storage_management',
             title = Config.Translate['management_header'],
-            options = options
+            options = options,
         })
         lib.showContext('am_storage_management')
+    end)
+end
+
+function OpenSharedManagement()
+    lib.registerContext({
+        id = 'am_storage_shared_management',
+        title = Config.Translate['share_warehouse'],
+        options = {
+            {
+                title = Config.Translate['shared_add_new'],
+                description = Config.Translate['shared_add_new_desc'],
+                icon = 'plus',
+                iconColor = 'green',
+                onSelect = function()
+                    lib.callback('am_storages:getPlayers', false, function(players)
+                        if not players or #players == 0 then
+                            Notify(Config.Translate['notify_header'], Config.Translate['shared_input_no_players'], 'error')
+                            return
+                        end
+                        local input = lib.inputDialog(Config.Translate['shared_input_header'], {
+                            {
+                                type = 'select',
+                                label = Config.Translate['shared_input_desc'],
+                                options = players,
+                                required = true
+                            }
+                        })
+
+                        if input then
+                            lib.callback('am_storages:addSharedPlayer', false, function(success)
+                                if success and success > 0 then 
+                                    Notify(Config.Translate['notify_header'], Config.Translate['shared_player_added'], 'success')
+                                    OpenSharedManagement()
+                                end
+                            end, input[1])
+                        end
+                    end)
+                end
+            },
+            {
+                title = Config.Translate['shared_remove'],
+                description = Config.Translate['shared_remove_desc'],
+                icon = 'x',
+                iconColor = 'red',
+                onSelect = function()
+                    OpenSharedRemove()
+                end
+            },
+        },
+    })
+    lib.showContext('am_storage_shared_management')
+end
+
+function OpenSharedRemove()
+    lib.callback('am_storages:getSharedList', false, function(shared)
+        local options = {}
+        if shared and #shared > 0 then 
+            for index, player in ipairs(shared) do 
+                table.insert(options, {
+                    title = player.name,
+                    description = Config.Translate['remove_user'],
+                    icon = 'person',
+                    iconColor = 'teal',
+                    onSelect = function()
+                        lib.callback('am_storages:removeSharedPlayer', false, function(success)
+                            if success and success > 0 then 
+                                Notify(Config.Translate['notify_header'], string.format(Config.Translate['shared_player_removed'], player.name), 'success')
+                                OpenSharedManagement()
+                            end
+                        end, player.identifier)
+                    end
+                })
+            end
+        else 
+            table.insert(options, {
+                title = Config.Translate['shared_list_empty'],
+                description = Config.Translate['shared_list_empty_desc'],
+                icon = 'x',
+                iconColor = 'red'
+            })
+        end
+        lib.registerContext({
+            id = 'am_storage_management_shared_remove',
+            title = Config.Translate['shared_remove_header'],
+            options = options,
+        })
+        lib.showContext('am_storage_management_shared_remove')
     end)
 end
 
@@ -198,25 +339,27 @@ function BuyWarehouse()
     end
 end
 
-function EnterWarehouse(data)
-    local storages
+function EnterWarehouse(data, drawManagement)
     DoScreenFadeOut(250)
+    print(json.encode(data))
     lib.callback('am_storages:enterWarehouse', false, function(success)
         if success then 
             inside = true
             DrawStorages(data)
             DrawEntrance(data)
-            DrawManagement(data)
-            Wait(250)
+            if drawManagement then 
+                DrawManagement(data)
+            end
+            Wait(500)
             DoScreenFadeIn(250)
         else
             Notify(Config.Translate['notify_header'], Config.Translate['error_enter'], 'error')
             print("^2[am_storages]^7 The callback gave false back on \'am_storages:enterWarehouse\'")
         end
-    end, data.level)
+    end, data.id ,data.level)
 end
 
-function ExitWarehouse()
+function ExitWarehouse(id)
     DoScreenFadeOut(250)
     lib.callback('am_storages:exitWarehouse', false, function(success)
         if success then 
@@ -225,13 +368,12 @@ function ExitWarehouse()
             Wait(250)
             DoScreenFadeIn(250)
         end
-    end)
+    end, id)
 end
 
 function DrawStorages(data)
     CreateThread(function()
         local textUi = false
-        print(json.encode(Config.Levels[data.level].storages))
         for index, storage in ipairs(Config.Levels[data.level].storages) do 
             CreateThread(function()
                 local coords = storage.coords
@@ -248,7 +390,7 @@ function DrawStorages(data)
                                     if stashId then
                                         exports.ox_inventory:openInventory('stash', stashId)
                                     end
-                                end, index, data.level)
+                                end, index, data.level, data.player_identifier)
                             end
 
                             if not textUi then
@@ -285,7 +427,7 @@ function DrawEntrance(data)
 
                 if dist < 0.5 then
                     if IsControlJustPressed(0, 38) then
-                        ExitWarehouse()
+                        ExitWarehouse(data.id)
                     end
 
                     if not textUi then
@@ -306,7 +448,12 @@ end
 
 function DrawManagement(data)
     CreateThread(function()
-        local coords = Config.Levels[data.level].management
+        local coords = vector3(
+            Config.Levels[data.level].management.x,
+            Config.Levels[data.level].management.y,
+            Config.Levels[data.level].management.z
+        )
+        local heading = Config.Levels[data.level].management.w
         while inside do
             local mycoords = GetEntityCoords(cache.ped)
             local dist = #(coords-mycoords)
@@ -343,7 +490,7 @@ function UpgradeWarehouse(data)
                 if success then 
                     Notify(Config.Translate['notify_header'], Config.Translate['successful_upgrade'], 'success')
                     lib.callback('am_storages:getPlayerStorage', false, function(result)
-                        EnterWarehouse(result[1])
+                        EnterWarehouse(result[1], true)
                     end)
                 elseif success == nil then 
                     Notify(Config.Translate['notify_header'], Config.Translate['error_palyerIdentifier'], 'error')
