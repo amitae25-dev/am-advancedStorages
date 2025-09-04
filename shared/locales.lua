@@ -8,15 +8,23 @@ Config.Translate = {
     ['successful_purchase'] = 'You successfully purchased a warehouse!',
     ['successful_upgrade'] = 'You successfully upgraded you warehouse to the level %s for %s$',
     ['successful_sell'] = 'You successfully sold your warehouse for %s$!',
+    ['shared_player_added'] = 'You successfully shared your warehouse with a new user',
+    ['shared_player_removed'] = 'You successfully removed %s from you share list',
     
     -- Main Menu
     ['menu_header'] = 'Storage Facility',
-    ['enter_storage'] = 'Enter Warehouse',
+    ['enter_storage'] = 'Enter %s',
     ['enter_storage_desc'] = 'Entry to the warehouse',
     ['buy_storage'] = 'Buy Warehouse',
     ['buy_storage_desc'] = 'Buy a new storage warehouse for: %s$',
     ['shared_storages'] = 'Shared Warehouses',
-    ['shared_storages_desc'] = 'SOON!!!',
+    ['shared_storages_desc'] = 'Add access to your friends.',
+
+    -- Shared Menu
+    ['shared_header'] = 'Shared Warehouses',
+    ['shared_options'] = 'Enter %s',
+    ['shared_options_desc'] = 'Owner: %s\nLevel: %s',
+    ['shared_empty'] = 'You dont have shared warehouses',
 
     -- Mangement Menu
     ['management_header'] = 'Warehouse Management',
@@ -25,8 +33,26 @@ Config.Translate = {
     ['upgrade_warehouse_desc'] = 'Upgrade your warehouse to %s level',
     ['share_warehouse'] = 'Share Warehouse',
     ['share_warehouse_desc'] = 'Share your storage with your friends!',
+    ['shared_add_new'] = 'Add new Guest',
+    ['shared_add_new_desc'] = 'Add your friend to the warehouse',
+    ['shared_remove'] = 'Remove Guest',
+    ['shared_remove_desc'] = 'Remove a user from your shared list',
+    ['shared_input_no_players'] = 'No players found!',
+    ['shared_input_header'] = 'Select Your Friend',
+    ['shared_input_desc'] = 'Players:',
+    ['shared_remove'] = 'Shared List',
+    ['shared_remove_header'] = 'You can remove users here',
+    ['remove_user'] = 'Click here to remove this user',
+    ['shared_list_empty'] = 'Shared List Is Empty',
+    ['shared_list_empty_desc'] = 'No one is guest in your Warehouse',
+
     ['sell_warehouse'] = 'Sell Warehouse',
     ['sell_warehouse_desc'] = 'Sell your Warehouse for %s$',
+    ['rename_warehouse'] = 'Rename Warehouse',
+    ['rename_warehouse_desc'] = 'Current name: %s',
+    ['input_rename_header'] = 'Rename Warehouse',
+    ['input_rename'] = 'Enter New Name',
+    ['input_rename_desc'] = 'This name will be shown for other players',
 
     -- Sell Approve
     ['sell_warehouse'] = 'Sell Warehouse',
