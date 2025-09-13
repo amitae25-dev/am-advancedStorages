@@ -206,3 +206,14 @@ function OpenStash(index, identifier, slot, weight, cb)
     exports.ox_inventory:RegisterStash('am_storages:stash:'.. index..'-'.. identifier, string.format(Config.Translate['storage_name'], index), slot, weight)
     cb('am_storages:stash:'.. index..'-'.. identifier)
 end
+
+-- Robbery Esentials
+
+function GetAllWarehouses(cb)
+    MySQL.query('SELECT * FROM am_storages', {
+    }, function(result)
+        if cb then 
+            cb(result)
+        end
+    end)
+end
