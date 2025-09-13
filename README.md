@@ -39,15 +39,37 @@ If you want to setup discord log you need to insert the discord webhooks in `ser
 | :-------- | :------- | :------------------------- |
 | Yes | `boolean` | Return if the player is inside a warehouse |
 
-
-
-## Roadmap
-
-- Shared warehouses
-
-
 ## Feedback / Bug report
 
 If you have any feedback, please reach out to me:
 - Discord: amitae_
 
+### Changelog:
+
+v1.1:
+- Shared option:
+  - Now you can add your friends to your warehouse
+  - Your friends can enter your warehouse and open your storages
+  - In the indoor management point you can add / remove anybody
+
+- Future Plans:
+  - Park In option
+  - Robbery option
+  - Police razzia option
+
+v1.2:
+- Targeting system:
+  - Now you can choose to use the ox_target for the indoor actions
+  - It lowers the resmon and more estatic
+  - For the storages it spawn objects to target
+  - The objects size is depends on the storage level
+
+- Park In:
+  - Now you can park inside with your car for easier depo
+  - There is a new zone outside (in front of the garage door), next to the NPC where you can enter the warehouse with a vehicle
+  - You can only enter the warehouse with a vehicle from warehouse level 4 (or you can edit this in the config)
+  - Only one vehicle can fit inside the warehouse, you can not enter with multiple vehicles
+
+- Future Plans:
+  - Robbery option
+  - Police razzia option
