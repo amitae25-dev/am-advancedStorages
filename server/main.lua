@@ -1,5 +1,5 @@
 local inside = {}
-
+local vehInside = {}
 lib.callback.register('am_storages:getPlayerStorage', function(source)
     local identifier = GetLicenseIdentifier(source)
     local p = promise:new()
@@ -21,9 +21,12 @@ lib.callback.register('am_storages:getPlayerStorage', function(source)
     return Citizen.Await(p)
 end)
 
-lib.callback.register('am_storages:upgradePlayerStorage', function(source, lvl)
+lib.callback.register('am_storages:upgradePlayerStorage', function(source, lvl, wh_id)
     local identifier = GetLicenseIdentifier(source)
     local p = promise:new()
+    if vehInside[wh_id] ~= nil then 
+        return 'removeVeh'
+    end
     if identifier then 
         local success = removeMoney(source, Config.Levels[lvl].upgradePrice)
         if success then 
@@ -178,8 +181,6 @@ lib.callback.register('am_storages:getSharedList', function(source)
     end
     return Citizen.Await(p)
 end)
-
-local vehInside = {}
 
 lib.callback.register('am_storages:enterWarehouse', function(source, wh_id, lvl, vehicle)
     local identifier = GetLicenseIdentifier(source)
