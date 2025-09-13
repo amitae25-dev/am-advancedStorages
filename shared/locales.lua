@@ -80,6 +80,7 @@ Config.Translate = {
     ['parkin_low_level'] = 'There is no space inside your warehouse to park in. Please upgrade you warehouse first!',
     ['parkin_busy'] = 'There is already a vehicle inside. Remove that first!',
     ['exit_warehouse_vehicle_target'] = 'Exit with vehicle',
+    ['remove_veh_first'] = 'There is a vehicle inside the warehouse. You need to remove that before upgradeing the warehouse!',
     -- Robbery
 
     ['robbery_header'] = 'Choose an option to brake in',
@@ -107,6 +108,7 @@ Config.Translate = {
     ['log_exit'] = 'Warehouse Left\nPlayer Server ID: ``%s``\nPlayer Fivem Identifier: ``%s``\n\nLeft the warehouse',
     ['log_stash'] = 'Warehouse Stash Opened\nPlayer Server ID: ``%s``\nPlayer Fivem Identifier: ``%s``\n\nOpened warehouse stash with stash ID: ``%s``',
 }
+
 
 
 
