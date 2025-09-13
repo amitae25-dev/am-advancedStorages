@@ -179,23 +179,55 @@ lib.callback.register('am_storages:getSharedList', function(source)
     return Citizen.Await(p)
 end)
 
-lib.callback.register('am_storages:enterWarehouse', function(source, wh_id, lvl)
+local vehInside = {}
+
+lib.callback.register('am_storages:enterWarehouse', function(source, wh_id, lvl, vehicle)
     local identifier = GetLicenseIdentifier(source)
-    SetPlayerRoutingBucket(source, wh_id)
-    SetEntityCoords(GetPlayerPed(source), Config.Levels[lvl].inside.x, Config.Levels[lvl].inside.y, Config.Levels[lvl].inside.z)
-    SetEntityHeading(GetPlayerPed(source), Config.Levels[lvl].inside.w)
+    if vehicle then 
+        if Config.Levels[lvl].parkIn ~= false then 
+            if vehInside[wh_id] ~= nil then return 'notEmpty' end
+            SetPlayerRoutingBucket(source, wh_id)
+            local entity = NetworkGetEntityFromNetworkId(vehicle)
+            SetEntityRoutingBucket(entity, wh_id)
+            SetEntityCoords(entity, Config.Levels[lvl].parkIn.x, Config.Levels[lvl].parkIn.y, Config.Levels[lvl].parkIn.z)
+            SetEntityHeading(entity, Config.Levels[lvl].parkIn.w)
+            Wait(500)
+            FreezeEntityPosition(entity, true)
+            vehInside[wh_id] = vehicle
+        else 
+            return 'lowLevel'
+        end
+    else 
+        SetPlayerRoutingBucket(source, wh_id)
+        SetEntityCoords(GetPlayerPed(source), Config.Levels[lvl].inside.x, Config.Levels[lvl].inside.y, Config.Levels[lvl].inside.z)
+        SetEntityHeading(GetPlayerPed(source), Config.Levels[lvl].inside.w)
+    end
     DiscordLog(string.format(Config.Translate['log_enter'], source, identifier), Server.Webhooks['enter_exit'])
+    local isVehicleInside = vehInside[wh_id]
     --table.insert(inside[wh_id], source)
-    return true
+    return true, isVehicleInside
 end)
 
-lib.callback.register('am_storages:exitWarehouse', function(source, wh_id)
+lib.callback.register('am_storages:exitWarehouse', function(source, wh_id, vehicle)
     local identifier = GetLicenseIdentifier(source)
-    SetPlayerRoutingBucket(source, 0)
-    SetEntityCoords(GetPlayerPed(source), Config.NPC.coords.x + 1.0, Config.NPC.coords.y + 1.0, Config.NPC.coords.z)
-    SetEntityHeading(GetPlayerPed(source), Config.NPC.coords.w)
-    DiscordLog(string.format(Config.Translate['log_exit'], source, identifier), Server.Webhooks['enter_exit'])
-    --tableRemove(inside[wh_id], source)
+    if vehicle then 
+        local entity = NetworkGetEntityFromNetworkId(vehInside[wh_id])
+        SetPlayerRoutingBucket(source, 0)
+        SetEntityRoutingBucket(entity, 0)
+        SetEntityCoords(entity, Config.DefaultSettings.parkIn.enterPos.x, Config.DefaultSettings.parkIn.enterPos.y, Config.DefaultSettings.parkIn.enterPos.z)
+        SetEntityHeading(entity, Config.DefaultSettings.parkIn.enterPos.w)
+        TaskWarpPedIntoVehicle(GetPlayerPed(source), entity, -1)
+        Wait(500)
+        FreezeEntityPosition(entity, false)
+        DiscordLog(string.format(Config.Translate['log_exit'], source, identifier), Server.Webhooks['enter_exit'])
+        vehInside[wh_id] = nil
+    else
+        SetPlayerRoutingBucket(source, 0)
+        SetEntityCoords(GetPlayerPed(source), Config.NPC.coords.x + 1.0, Config.NPC.coords.y + 1.0, Config.NPC.coords.z)
+        SetEntityHeading(GetPlayerPed(source), Config.NPC.coords.w)
+        DiscordLog(string.format(Config.Translate['log_exit'], source, identifier), Server.Webhooks['enter_exit'])
+        --tableRemove(inside[wh_id], source)
+    end
     return true
 end)
 
@@ -236,3 +268,29 @@ AddEventHandler('onResourceStart', function(resourceName)
     if GetCurrentResourceName() ~= resourceName then return end
     InitDataBase()
 end)
+
+-- Robbery Esentials            Work in progress
+--[[
+lib.callback.register('am_storages:getWarehousesForRobbery', function(source)
+    local p = promise:new()
+    GetAllWarehouses(function(data)
+        if data and #data > 0 then 
+            p:resolve(data)
+        else 
+            p:resolve(false)
+        end
+    end)
+    return Citizen.Await(p)
+end)
+
+lib.callback.register('am_storages:removeItem', function(source, item, count)
+    local itemCount = exports.ox_inventory:Search(source, 'count', item)
+
+    if itemCount >= count then
+        local removed = exports.ox_inventory:RemoveItem(source, item, count)
+        if removed then
+            return true
+        end
+    end
+    return false
+end)]]
