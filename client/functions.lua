@@ -714,7 +714,11 @@ function UpgradeWarehouse(data)
         if moneyAmount >= Config.Levels[data.level].upgradePrice then 
             lib.callback('am_storages:upgradePlayerStorage', false, function(success)
                 if success then 
-                    Notify(Config.Translate['notify_header'], Config.Translate['successful_upgrade'], 'success')
+                    exports.ox_target:removeZone('am_warehouses:vehicleExitTarget')
+                    exports.ox_target:removeZone('am_warehouses:entranceTarget')
+                    exports.ox_target:removeZone('am_warehouses:managementTarget')
+                    CleareObjects()
+                    Notify(Config.Translate['notify_header'], string.format(Config.Translate['successful_upgrade'], data.level +1, Config.Levels[data.level].upgradePrice), 'success')
                     lib.callback('am_storages:getPlayerStorage', false, function(result)
                         EnterWarehouse(result[1], true)
                     end)
