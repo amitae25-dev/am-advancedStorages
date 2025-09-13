@@ -1,6 +1,10 @@
 Config.Translate = {
     ['blip_label'] = 'Warehouse',
     ['npc_target'] = 'Show Storage Options',
+    ['robbery_target'] = 'Show Robbery Options',
+    ['open_stash_target'] = 'Open Stash',
+    ['exit_warehouse_target'] = 'Exit Warehouse',
+    ['management_target'] = 'Open Management',
 
     -- Notify
     ['notify_header'] = 'Warehouse',
@@ -10,7 +14,8 @@ Config.Translate = {
     ['successful_sell'] = 'You successfully sold your warehouse for %s$!',
     ['shared_player_added'] = 'You successfully shared your warehouse with a new user',
     ['shared_player_removed'] = 'You successfully removed %s from you share list',
-    
+    ['missing_required_item'] = 'You are missing a required item!',
+     
     -- Main Menu
     ['menu_header'] = 'Storage Facility',
     ['enter_storage'] = 'Enter %s',
@@ -54,6 +59,9 @@ Config.Translate = {
     ['input_rename'] = 'Enter New Name',
     ['input_rename_desc'] = 'This name will be shown for other players',
 
+    ['settings'] = 'Settings',
+    ['settings_desc'] = 'Select this for advanced settings',
+
     -- Sell Approve
     ['sell_warehouse'] = 'Sell Warehouse',
     ['sell_warehouse_desc'] = 'Are you sure you want to sell your level %s warehouse for %s$?',
@@ -63,6 +71,22 @@ Config.Translate = {
     ['storage_open'] = '[E] - Open Storage %s',
     ['storage_entrance'] = '[E] - Exit Warehouse',
     ['storage_management'] = '[E] - Open Management Menu',
+
+    -- Park In
+    ['enter_parkin'] = '[E] - Enter With Vehicle',
+    ['exit_parkin'] = '[E] - Exit With Vehicle',
+    ['exit_vehicle_first'] = 'Exit vehicle first!',
+    ['cannot_enter_shared'] = 'You can not enter a shared warehouse with a vehicle',
+    ['parkin_low_level'] = 'There is no space inside your warehouse to park in. Please upgrade you warehouse first!',
+    ['parkin_busy'] = 'There is already a vehicle inside. Remove that first!',
+    ['exit_warehouse_vehicle_target'] = 'Exit with vehicle',
+    -- Robbery
+
+    ['robbery_header'] = 'Choose an option to brake in',
+    ['rob_warehouse'] = 'Rob %s\'s warehouse',
+    ['rob_warehouse_desc'] = 'Warehouse Level: %s',
+    ['list_empty'] = 'List is Empty',
+    ['list_empty_desc'] = 'No robbable warehouse found',
 
     -- Error 
     ['error_buy'] = 'Error occured during the purchase! (Look at F8 for more info)',
