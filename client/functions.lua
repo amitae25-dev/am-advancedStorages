@@ -713,6 +713,12 @@ function UpgradeWarehouse(data)
         local moneyAmount = exports.ox_inventory:Search('count', 'money')
         if moneyAmount >= Config.Levels[data.level].upgradePrice then 
             lib.callback('am_storages:upgradePlayerStorage', false, function(success)
+                print(success)
+                if success == 'removeVeh' then 
+                    Notify(Config.Translate['notify_header'], Config.Translate['remove_veh_first'], 'error')
+                    return
+                end
+
                 if success then 
                     exports.ox_target:removeZone('am_warehouses:vehicleExitTarget')
                     exports.ox_target:removeZone('am_warehouses:entranceTarget')
@@ -732,7 +738,7 @@ function UpgradeWarehouse(data)
                     Notify(Config.Translate['notify_header'], Config.Translate['error_unexpected'], 'error')
                     print("^2[am_storages]^7 Unexpected error at \'am_storages:upgradePlayerStorage\' at \'client/functions.lua/324\'")
                 end
-            end, data.level)
+            end, data.level, data.id)
         else 
             Notify(Config.Translate['notify_header'], Config.Translate['not_enough_money'], 'error')
             return
