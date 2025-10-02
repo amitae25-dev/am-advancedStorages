@@ -9,12 +9,16 @@ version "1.0"
 
 shared_scripts {
 	'shared/main.lua',
+	'shared/framework.lua',
 	'shared/locales.lua',
 	'@ox_lib/init.lua'
 }
 
 client_scripts {
-	'client/*.lua'
+	'client/bridge.lua',
+	'client/functions.lua',
+	'client/main.lua'
+	--'client/*.lua'
 }
 
 server_scripts {

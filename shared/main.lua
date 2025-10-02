@@ -1,25 +1,46 @@
 Config = {}
 
+Config.Entrance = {
+    {
+        coords = vector4(-1273.0779, -2306.3823, 13.9445, 331.5966),                                                -- Coords of the NPC must be vec4
+        model = "G_M_M_Goons_01",                                                                                   -- Model of the NPC https://forge.plebmasters.de/peds
+        scenario = "WORLD_HUMAN_CLIPBOARD_FACILITY",                                                                -- Set this to false to disable NPC scenario
+        blip = {
+            showBlip = true,                                                                                        -- Set this to false to disable blip on this NPC
+            model = 50,                                                                                             -- Blip model
+            scale = 0.8,                                                                                            -- Blip scale (size)
+            color = 21,                                                                                             -- Color of the blip
+            label = "Blip"                                                                                          -- Name of the blip
+        },
+        parkIn = {
+            enabled = true,                                                                                         -- Set this to false if you dont want players to be able to park inside the warehouse
+            enterPos = vector4(-1276.2678, -2303.2861, 14.0851, 328.7863)                                           -- Park in entrance point
+        }
+    },
+    {
+        coords = vector4(-1181.2394, -2240.8252, 13.9209, 288.9796),
+        model = "S_M_M_DockWork_01",
+        scenario = false,
+        blip = {
+            showBlip = true,
+            model = 50,
+            scale = 0.8,
+            color = 21,
+            label = "Different Blip"
+        },
+        parkIn = {
+            enabled = false,
+            enterPos = vector4(-1276.2678, -2303.2861, 14.0851, 328.7863)
+        }
+    }
+}
+
 Config.DefaultSettings = {
     useTarget = true,
     parkIn = {
         enabled = true,
         enterPos = vector4(1189.4525, -3106.6699, 5.5906, 0.7470)
     }
-}
-
-Config.Blip = {
-    showBlip = true,
-    blipModel = 50,
-    blipScale = 0.8,
-    blipColor = 21,
-    blipLabel = 'Warehouses'
-}
-
-Config.NPC = {
-    coords = vector4(1184.92, -3108.2, 5.04, 6.32),
-    model = 'A_M_M_StLat_02',
-    scenario = 'WORLD_HUMAN_CLIPBOARD_FACILITY',                    -- Set to false if you dont want the NPC to do any scenario
 }
 --[[                Work in progress
 Config.RobberyNPC = {
@@ -356,14 +377,6 @@ Config.Levels = {                                                   -- Max 10 le
         }
     },
 }
-
-function Notify(title, description, ntype)
-    lib.notify({
-        title = title,
-        description = description,
-        type = ntype
-    })
-end
 
 Config.Debug = {
     zoneDebug = false,

@@ -10,6 +10,20 @@ function LoadModel(model)
     end
 end
 
+function InitBlip(showBlip, coords, model, scale, color, label)
+    if showBlip then 
+        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+        SetBlipSprite(blip, model)
+        SetBlipDisplay(blip, 4)
+        SetBlipScale(blip, scale)
+        SetBlipAsShortRange(blip, true)
+        SetBlipColour(blip, color)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString(label)
+        EndTextCommandSetBlipName(blip)
+    end
+end
+
 -- For exports
 
 function isPlayerInside()
@@ -40,54 +54,26 @@ function InitParkIn(coords)
     })
 end
 
-function InitTarget(data, blip, targetLabel, func)
-    if Config.Blip.showBlip and blip then 
-        local blip = AddBlipForCoord(Config.NPC.coords.x, Config.NPC.coords.y, Config.NPC.coords.z)
-        SetBlipSprite(blip, Config.Blip.blipModel)
-        SetBlipDisplay(blip, 4)
-        SetBlipScale(blip, Config.Blip.blipScale)
-        SetBlipAsShortRange(blip, true)
-        SetBlipColour(blip, Config.Blip.blipColor)
-        BeginTextCommandSetBlipName("STRING")
-        AddTextComponentString(Config.Blip.blipLabel)
-        EndTextCommandSetBlipName(blip)
-    end
-
+function InitTarget(coords, model, scenario, targetLabel, index, func)
     local zone = lib.zones.sphere({
-        coords = data.coords,
+        coords = coords,
         debug = Config.Debug.zoneDebug,
         radius = 30,
         onEnter = function(self)
             if not self.npc then
-                LoadModel(data.model)
+                LoadModel(model)
 
-                npc = CreatePed(4, data.model, data.coords, false, true)
+                npc = CreatePed(4, model, coords, false, true)
 
                 FreezeEntityPosition(npc, true)
                 SetEntityInvincible(npc, true)
                 SetBlockingOfNonTemporaryEvents(npc, true)
-                SetEntityHeading(npc, data.coords.w)
+                SetEntityHeading(npc, coords.w)
                 PlaceObjectOnGroundProperly(npc)
-                if data.scenario then 
-                    TaskStartScenarioInPlace(npc, data.scenario, true, true)
+                if scenario then 
+                    TaskStartScenarioInPlace(npc, scenario, true, true)
                 end
-
-                --- OX TARGET ----
-
-                exports.ox_target:addLocalEntity(npc, {
-                    name = 'am_storage_target',
-                    icon = 'fa-solid fa-hand',
-                    --iconColor = 'white',
-                    label = targetLabel,
-                    distance = 1.5,
-                    canInteract = function(entity, distance, coords)
-                        return true
-                    end,
-                    
-                    onSelect = function(data)
-                        func()
-                    end
-                })
+                TargetEntity(npc, "am_npc_target_" .. index, targetLabel, 'fa-solid fa-hand', func)
             end
         end,
         onExit = function(self)

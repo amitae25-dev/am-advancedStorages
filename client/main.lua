@@ -1,17 +1,13 @@
 CreateThread(function()
     Wait(2000)
-    InitTarget(Config.NPC, true, Config.Translate['npc_target'], function()             -- Warehouse NPC
-        OpenStorageMain()
-    end)
-
-    --[[if Config.Robbery.enabled then 
-        InitTarget(Config.RobberyNPC, false, Config.Translate['robbery_target'], function()             -- Robbery NPC      Work in progress...
-            OpenRobberyMain()
+    for index, item in ipairs(Config.Entrance) do 
+        InitBlip(item.blip.showBlip, item.coords, item.blip.model, item.blip.scale, item.blip.color, item.blip.label)
+        InitTarget(item.coords, item.model, item.scenario, Config.Translate['npc_target'], index, function()
+            OpenStorageMain()
         end)
-    end]]
-
-    if Config.DefaultSettings.parkIn.enabled then 
-        InitParkIn(Config.DefaultSettings.parkIn.enterPos)
+        if item.parkIn.enabled then 
+            InitParkIn(item.parkIn.enterPos)
+        end
     end
 end)
 
