@@ -1,3 +1,4 @@
+# Only download the release versions, because downloading the source might cause problems!
 
 # Advanced Storages
 
